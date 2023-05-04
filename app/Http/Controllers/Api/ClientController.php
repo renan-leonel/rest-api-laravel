@@ -206,7 +206,136 @@ class ClientController extends Controller{
 
             $client->save();
 
-            return ['return' => 'ok'];
+            return response()->json($client, 200);
+        }
+        catch(\Exception $error){
+            return ['error' => $error->getMessage()];
+        }
+    }
+
+/**
+ * @OA\Get(
+ *     path="/test-unicampo/public/api/clients/{id}",
+ *     summary="Consulta um cliente pelo ID",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer", example=1)),
+ *     @OA\Response(response="200", description="Cliente encontrado"),
+ *     @OA\Response(response="404", description="Cliente não encontrado")
+ * )
+*/
+
+    public function read($id) {
+        try{
+            $client = Client::find($id);
+
+            if (!$client) {
+                return response()->json(['error' => 'Cliente não encontrado'], 404);
+            }
+
+            return response()->json($client, 200);
+        }
+
+        catch(\Exception $error){
+            return ['error' => $error->getMessage()];
+        }
+    }
+
+/**
+ * @OA\Delete(
+ *     path="/test-unicampo/public/api/clients/{id}",
+ *     summary="Remove um cliente pelo ID",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer", example=1)),
+ *     @OA\Response(response="200", description="Cliente removido com sucesso"),
+ *     @OA\Response(response="404", description="Cliente não encontrado")
+ * )
+*/
+
+    public function delete($id) {
+        try{
+            $client = Client::find($id);
+
+            if (!$client) {
+                return response()->json(['error' => 'Cliente não encontrado'], 404);
+            }
+
+            $client->delete();
+
+            return response()->json($client, 200);
+        }
+
+        catch(\Exception $error){
+            return ['error' => $error->getMessage()];
+        }
+    }
+
+    /**
+ * @OA\Put(
+ *     path="/test-unicampo/public/api/clients/{id}",
+ *     summary="Atualiza um cliente pelo ID",
+ *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer", example=1)),
+ *     @OA\Parameter(name="nome", in="query", required=false, @OA\Schema(type="string", example="Exemplo")),
+ *     @OA\Parameter(name="data_nascimento", in="query", required=false, @OA\Schema(type="string", format="date", example="01/01/1990")),
+ *     @OA\Parameter(name="cpf_cnpj", in="query", required=false, @OA\Schema(type="string", example="00000000000")),
+ *     @OA\Parameter(name="email", in="query", required=false, @OA\Schema(type="string", example="exemplo@gmail.com")),
+ *     @OA\Parameter(name="endereco", in="query", required=false, @OA\Schema(type="string", example="87020010")),
+ *     @OA\Parameter(name="localizacao", in="query", required=false, @OA\Schema(type="string", type="string", example="-11.111111,-22.222222")),
+ * 
+ *     @OA\Response(response="200", description="Cliente atualizado com sucesso"),
+ *     @OA\Response(response="400", description="Bad request"),
+ *     @OA\Response(response="404", description="Cliente não encontrado")
+ * )
+*/
+    public function update(Request $request, $id){
+        try{
+            $client = Client::find($id);
+            
+            if (!$client) {
+                return response()->json(['error' => 'Cliente não encontrado'], 404);
+            }
+
+            if($request->has('nome')){
+                $client->nome = $request->nome;
+            }
+
+            if($request->has('data_nascimento')){
+                $client->data_nascimento = $request->data_nascimento;
+            }
+
+            if($request->has('cpf_cnpj')){
+                $cpf_cnpj = $request->cpf_cnpj;
+
+                $x = $this->validarCpfCnpj($cpf_cnpj);
+
+                if($x == false){
+                    return ['error' => 'CPF/CNPJ inválido'];
+                }
+                else{
+                    $client->tipo_pessoa = $x[1];
+                    $client->cpf_cnpj = $x[0];
+                }
+            }
+
+            if($request->has('email')){
+                if($this->validarEmail($request->email) == false){
+                    return ['error' => 'E-mail inválido'];
+                }
+                else{
+                    $client->email = $request->email;
+                }
+            }
+
+            if($request->has('endereco')){
+                $aux = $this->validarCEP($request->endereco);
+                
+                $client->endereco = $aux['logradouro'] . ', ' . $aux['bairro'] . ', ' . $aux['localidade'] . ', ' . $aux['uf'];
+            }
+
+            if($request->has('localizacao')){
+                $client->localizacao = $request->localizacao;
+            }
+
+            $client->save();
+
+            return response()->json($client, 200);
         }
         catch(\Exception $error){
             return ['error' => $error->getMessage()];
