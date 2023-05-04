@@ -14,7 +14,7 @@ Dentro da pasta raiz do projeto, instale as dependências:
 composer install
 ```
 
-Para esta implementação, os dados do arquivo .env são os mesmos do arquivo .env.example, para fins de demonstração. Crie um arquivo .env na raiz do projeto, copie os dados do arquivo .env.example e cole no .env.
+Para esta implementação, os dados do arquivo .env são os mesmos do arquivo .env.example, para fins de demonstração. Crie um arquivo .env na raiz do projeto, copie os dados do arquivo .env.example e cole no .env. Altere a variável DB_DATABASE=laravel para DB_DATABASE=clients
 
 Defina a chave de criptografia do Laravel com o comando:
 
