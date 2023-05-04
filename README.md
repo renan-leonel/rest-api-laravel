@@ -6,7 +6,7 @@ Esta API permite a inserção de clientes no banco de dados, realizando validaç
 
 Para executar esta API, primeiramente é necessário instalar o PHP e o Composer. Neste projeto, foi utilizado o XAMPP, que pode ser baixado a partir do site https://www.apachefriends.org/download.html. Para baixar o Composer, acesse https://getcomposer.org/download/.
 
-Com o XAMPP instalado, inicie o servidor Apache e MySQL.
+Com o XAMPP instalado, clone o repositório dentro de xampp/htdocs. Inicie o servidor Apache e MySQL.
 
 Dentro da pasta raiz do projeto, instale as dependências:
 
